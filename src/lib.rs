@@ -523,10 +523,11 @@ extern "C" fn tokenCallback(state: *mut c_void, token: *const c_char) -> bool {
 
     if let Some(callback) = callbacks.get_mut(&(state as usize)) {
         let c_str: &CStr = unsafe { CStr::from_ptr(token) };
-        let str_slice: &str = c_str.to_str().unwrap();
-        let string: String = str_slice.to_owned();
-
-        return callback(string);
+        let str_slice_res = c_str.to_str();
+        if let Ok(str_slice) = str_slice_res {
+            let string: String = str_slice.to_owned();
+            return callback(string);
+        }
     }
 
     true
